@@ -1,8 +1,13 @@
 package com.bluete.walkie
 
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
+import android.os.Build
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
@@ -26,6 +31,8 @@ class BluetoothService : Service() {
 
     companion object {
         private const val TAG = "BluetoothService"
+        private const val CHANNEL_ID = "bluetooth_walkie_channel"
+        private const val NOTIFICATION_ID = 1
         val SPP_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
         const val SERVICE_NAME = "BluetoothWalkie"
         const val SAMPLE_RATE = 16000
@@ -54,7 +61,49 @@ class BluetoothService : Service() {
 
     override fun onBind(intent: Intent): IBinder = binder
 
-    private var bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+    override fun onCreate() {
+        super.onCreate()
+        createNotificationChannel()
+        startForeground(NOTIFICATION_ID, buildNotification("等待连接中..."))
+    }
+
+    private fun createNotificationChannel() {
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "蓝牙对讲服务",
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            description = "保持蓝牙对讲连接"
+            setShowBadge(false)
+        }
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.createNotificationChannel(channel)
+    }
+
+    private fun buildNotification(text: String): android.app.Notification {
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0,
+            Intent(this, MainActivity::class.java),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        return android.app.Notification.Builder(this, CHANNEL_ID)
+            .setContentTitle("蓝牙对讲")
+            .setContentText(text)
+            .setSmallIcon(android.R.drawable.ic_menu_call)
+            .setContentIntent(pendingIntent)
+            .setOngoing(true)
+            .build()
+    }
+
+    private fun updateNotification(text: String) {
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.notify(NOTIFICATION_ID, buildNotification(text))
+    }
+
+    private var bluetoothAdapter: BluetoothAdapter? by lazy {
+        val manager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        manager.adapter
+    }
 
     private var acceptThread: AcceptThread? = null
     private var connectThread: ConnectThread? = null
@@ -96,6 +145,7 @@ class BluetoothService : Service() {
         acceptThread = AcceptThread()
         acceptThread!!.start()
         state = STATE_LISTEN
+        updateNotification("等待连接中...")
     }
 
     fun connect(device: BluetoothDevice) {
@@ -132,6 +182,7 @@ class BluetoothService : Service() {
 
         connectedDeviceName = device.name ?: "未知设备"
         state = STATE_CONNECTED
+        updateNotification("已连接：$connectedDeviceName")
 
         audioPlayThread = AudioPlayThread()
         audioPlayThread!!.start()
@@ -145,6 +196,7 @@ class BluetoothService : Service() {
     private fun onConnectionFailed() {
         broadcastToast("连接失败，请重试")
         state = STATE_LISTEN
+        updateNotification("等待连接中...")
         startListening()
     }
 
@@ -152,6 +204,7 @@ class BluetoothService : Service() {
         broadcastToast("连接已断开")
         stopAll()
         state = STATE_LISTEN
+        updateNotification("等待连接中...")
         startListening()
     }
 
