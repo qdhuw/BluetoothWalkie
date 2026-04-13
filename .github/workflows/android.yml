@@ -1,0 +1,72 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        id: setup-java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Override JAVA_HOME to JDK 17
+        run: |
+          export JAVA_HOME="${{ steps.setup-java.outputs.path }}"
+          echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
+          java -version
+
+      - name: Fix gradlew line endings (Windows→Unix)
+        run: |
+          if file gradlew | grep -q "CRLF"; then
+            sed -i 's/\r$//' gradlew
+            echo "Converted gradlew CRLF → LF"
+          else
+            echo "gradlew already has correct line endings"
+          fi
+          file gradlew
+
+      - name: Set gradlew executable
+        run: chmod +x gradlew
+
+      - name: Verify gradle files
+        run: |
+          echo "JAVA_HOME=$JAVA_HOME"
+          java -version
+          ls -la gradlew gradlew.bat gradle/wrapper/
+          ./gradlew --version
+
+      - name: Build Debug APK
+        run: |
+          echo "JAVA_HOME=$JAVA_HOME"
+          java -version
+          ./gradlew assembleDebug --no-daemon 2>&1
+
+      - name: Show result
+        if: always()
+        run: |
+          if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then
+            ls -lh app/build/outputs/apk/debug/app-debug.apk
+          else
+            echo "=== APK NOT FOUND ==="
+            cat app/build/outputs/logs/manifest-merger-debug-report.txt 2>/dev/null || true
+          fi
+
+      - name: Upload APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BluetoothWalkie-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
