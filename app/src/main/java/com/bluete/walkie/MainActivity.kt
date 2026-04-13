@@ -165,7 +165,11 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         val intent = Intent(this, BluetoothService::class.java)
-        startService(intent)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
 
         val f1 = IntentFilter(BluetoothService.ACTION_STATE_CHANGED)
