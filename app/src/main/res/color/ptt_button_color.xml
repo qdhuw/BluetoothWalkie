@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- PTT 按钮背景颜色选择器 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/ptt_active" android:state_activated="true" />
+    <item android:color="@color/ptt_disabled" android:state_enabled="false" />
+    <item android:color="@color/ptt_normal" />
+</selector>

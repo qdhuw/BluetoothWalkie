@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 主色 -->
+    <color name="colorPrimary">#1976D2</color>
+    <color name="colorPrimaryDark">#1565C0</color>
+    <color name="colorPrimaryLight">#BBDEFB</color>
+    <color name="colorAccent">#FF5722</color>
+
+    <!-- 背景 -->
+    <color name="bg_main">#F0F4F8</color>
+    <color name="card_bg">#FFFFFF</color>
+    <color name="item_bg">#F8FAFB</color>
+    <color name="connected_card_bg">#E8F5E9</color>
+
+    <!-- 连接状态色 -->
+    <color name="state_none">#9E9E9E</color>
+    <color name="state_listening">#FF9800</color>
+    <color name="state_connecting">#2196F3</color>
+    <color name="state_connected">#4CAF50</color>
+    <color name="state_disconnected">#F44336</color>
+
+    <!-- 文字 -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+
+    <!-- PTT 按钮颜色选择器（xml中引用） -->
+    <color name="ptt_normal">#1976D2</color>
+    <color name="ptt_active">#FF5722</color>
+    <color name="ptt_disabled">#BDBDBD</color>
+</resources>

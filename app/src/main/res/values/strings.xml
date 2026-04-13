@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">蓝牙对讲</string>
+    <string name="status_none">未连接</string>
+    <string name="status_listening">等待连接中…</string>
+    <string name="status_connecting">连接中…</string>
+    <string name="status_connected">已连接</string>
+    <string name="btn_ptt_idle">按住说话</string>
+    <string name="btn_ptt_active">松开结束</string>
+    <string name="btn_scan">扫描设备</string>
+    <string name="btn_stop_scan">停止扫描</string>
+    <string name="btn_disconnect">断开连接</string>
+    <string name="hint_no_devices">暂无已配对设备，请点击"扫描设备"</string>
+    <string name="hint_scan_devices">正在扫描附近蓝牙设备…</string>
+    <string name="hint_tap_to_connect">点击设备发起连接</string>
+    <string name="hint_paired_devices">已配对设备（点击连接）</string>
+    <string name="err_no_bluetooth">您的手机不支持蓝牙功能</string>
+    <string name="err_enable_bluetooth">请开启蓝牙以使用对讲功能</string>
+    <string name="err_permission">需要蓝牙和录音权限才能使用对讲功能</string>
+    <string name="toast_connect_first">请先连接蓝牙设备</string>
+</resources>
