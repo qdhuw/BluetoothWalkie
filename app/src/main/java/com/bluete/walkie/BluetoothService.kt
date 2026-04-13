@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
+import android.content.Context
 import android.os.Build
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothServerSocket
@@ -63,6 +64,7 @@ class BluetoothService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        bluetoothAdapter = (getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, buildNotification("等待连接中..."))
     }
@@ -101,10 +103,7 @@ class BluetoothService : Service() {
         manager.notify(NOTIFICATION_ID, buildNotification(text))
     }
 
-    private var bluetoothAdapter: BluetoothAdapter? by lazy {
-        val manager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        manager.adapter
-    }
+    private var bluetoothAdapter: BluetoothAdapter? = null
 
     private var acceptThread: AcceptThread? = null
     private var connectThread: ConnectThread? = null
